@@ -63,7 +63,7 @@ class FastParapheurController
      */
     private const PICTOGRAM_DIMENSIONS = [
         'height' => 20,
-        'width' => 50,
+        'width'  => 50,
     ];
 
     /**
@@ -1406,11 +1406,11 @@ class FastParapheurController
             ]);
 
             $sentMainDocument = [
-                'resId'         => $resource['res_id'],
-                'subject'       => $resource['subject'],
-                'signable'      => empty($mainDocumentSigned),
-                'integrations'  => $resource['integrations'],
-                'filePath'      => $docservers[$resource['docserver_id']] . $resource['path'] . $resource['filename']
+                'resId'        => $resource['res_id'],
+                'subject'      => $resource['subject'],
+                'signable'     => empty($mainDocumentSigned),
+                'integrations' => $resource['integrations'],
+                'filePath'     => $docservers[$resource['docserver_id']] . $resource['path'] . $resource['filename']
             ];
         }
 
@@ -1521,9 +1521,9 @@ class FastParapheurController
 
         foreach ($documentsToSign as $docToSign) {
             $result = FastParapheurController::onDemandUploadFilesToFast([
-                'config'    => $args['config'],
-                'document'  => $docToSign,
-                'circuit'   => $circuit,
+                'config'   => $args['config'],
+                'document' => $docToSign,
+                'circuit'  => $circuit,
             ]);
             if (!empty($result['error'])) {
                 return ['code' => $result['code'], 'error' => $result['error']];
@@ -1599,7 +1599,7 @@ class FastParapheurController
 
         $doc = [];
 
-        if (!$isOtpActive) {
+        if (!$isOtpActive && !empty($mainResource)) {
             if (!empty($summarySheetFilePath)) {
                 $appendices[] = [
                     'isFile'   => true,
@@ -1668,7 +1668,7 @@ class FastParapheurController
         }
 
         // Send main document if in signature book
-        $mainResource['integrations'] = json_decode($mainResource['integrations'], true);
+        $mainResource['integrations'] = json_decode($mainResource['integrations'] ?? '', true);
 
         if (
             !empty($mainResource['integrations']['inSignatureBook']) &&
@@ -1769,6 +1769,7 @@ class FastParapheurController
     /**
      * @param array $args
      * @return array|false
+     * @throws Exception
      */
     public static function download(array $args)
     {
@@ -1804,7 +1805,6 @@ class FastParapheurController
         $config = $args['config'];
 
         if (!empty($config['data']['integratedWorkflow']) && $config['data']['integratedWorkflow'] == 'true') {
-
             $steps = FastParapheurController::prepareSteps($args['steps']);
             if (isset($steps['error'])) {
                 return $steps;
@@ -2022,7 +2022,8 @@ class FastParapheurController
                 // Convert coordinates to millimeters
                 $position['position']['x'] = (int)($dimensions['width'] * $position['position']['x'] / 100);
                 $position['position']['y'] = (int)($dimensions['height'] -
-                    ($dimensions['height'] * $position['position']['y'] / 100) - FastParapheurController::PICTOGRAM_DIMENSIONS['height']);
+                    ($dimensions['height'] * $position['position']['y'] / 100) -
+                    FastParapheurController::PICTOGRAM_DIMENSIONS['height']);
             }
         }
 
@@ -2178,6 +2179,7 @@ class FastParapheurController
     /**
      * @param array $args
      * @return array
+     * @throws Exception
      */
     public static function getUsers(array $args): array
     {
