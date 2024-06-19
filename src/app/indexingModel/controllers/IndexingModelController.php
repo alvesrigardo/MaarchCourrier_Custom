@@ -339,6 +339,10 @@ class IndexingModelController
             ]);
         }
 
+        if ($body['private'] === 'false') {
+            $body['entities'] = ['ALL_ENTITIES'];
+        }
+
         if (in_array(IndexingModelController::ALL_ENTITIES, $body['entities'] ?? [])) {
             IndexingModelsEntitiesModel::create([
                 'model_id' => $modelId,
