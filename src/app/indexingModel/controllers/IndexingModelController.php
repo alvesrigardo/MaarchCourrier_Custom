@@ -17,6 +17,7 @@
 namespace IndexingModel\controllers;
 
 use CustomField\models\CustomFieldModel;
+use DateTime;
 use Entity\models\EntityModel;
 use Exception;
 use Group\controllers\PrivilegeController;
@@ -303,7 +304,7 @@ class IndexingModelController
         foreach ($body['fields'] as $field) {
             if (in_array($field['identifier'], IndexingModelController::INDEXABLE_DATES) &&
                 !empty($field['default_value']) && $field['default_value'] != '_TODAY') {
-                $date = new \DateTime($field['default_value']);
+                $date = new DateTime($field['default_value']);
                 $field['default_value'] = $date->format('Y-m-d');
             }
             if (strpos($field['identifier'], 'indexingCustomField_') !== false && !empty($field['default_value']) &&
@@ -316,7 +317,7 @@ class IndexingModelController
                     continue;
                 }
                 if ($customField['type'] == 'date') {
-                    $date = new \DateTime($field['default_value']);
+                    $date = new DateTime($field['default_value']);
                     $field['default_value'] = $date->format('Y-m-d');
                 }
             }
@@ -490,7 +491,7 @@ class IndexingModelController
                 foreach ($fieldsToKeep as $field) {
                     if (in_array($field['identifier'], IndexingModelController::INDEXABLE_DATES) &&
                         !empty($field['default_value']) && $field['default_value'] != '_TODAY') {
-                        $date = new \DateTime($field['default_value']);
+                        $date = new DateTime($field['default_value']);
                         $field['default_value'] = $date->format('Y-m-d');
                     }
                     if (strpos($field['identifier'], 'indexingCustomField_') !== false &&
@@ -503,7 +504,7 @@ class IndexingModelController
                             continue;
                         }
                         if ($customField['type'] == 'date') {
-                            $date = new \DateTime($field['default_value']);
+                            $date = new DateTime($field['default_value']);
                             $field['default_value'] = $date->format('Y-m-d');
                         }
                     }
@@ -582,7 +583,7 @@ class IndexingModelController
         foreach ($body['fields'] as $field) {
             if (in_array($field['identifier'], IndexingModelController::INDEXABLE_DATES) &&
                 !empty($field['default_value']) && $field['default_value'] != '_TODAY') {
-                $date = new \DateTime($field['default_value']);
+                $date = new DateTime($field['default_value']);
                 $field['default_value'] = $date->format('Y-m-d');
             }
             if (strpos($field['identifier'], 'indexingCustomField_') !== false && !empty($field['default_value']) &&
@@ -590,7 +591,7 @@ class IndexingModelController
                 $customFieldId = explode('_', $field['identifier'])[1];
                 $customField = CustomFieldModel::getById(['id' => $customFieldId, 'select' => ['type']]);
                 if ($customField['type'] == 'date') {
-                    $date = new \DateTime($field['default_value']);
+                    $date = new DateTime($field['default_value']);
                     $field['default_value'] = $date->format('Y-m-d');
                 }
             }
@@ -766,6 +767,7 @@ class IndexingModelController
      * @param Response $response
      * @param array $args
      * @return Response
+     * @throws Exception
      */
     public function disable(Request $request, Response $response, array $args): Response
     {
@@ -804,6 +806,7 @@ class IndexingModelController
      * @param Response $response
      * @param array $args
      * @return Response
+     * @throws Exception
      */
     public function enable(Request $request, Response $response, array $args): Response
     {
