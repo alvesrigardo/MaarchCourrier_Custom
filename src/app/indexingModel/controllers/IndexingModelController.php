@@ -339,7 +339,7 @@ class IndexingModelController
             ]);
         }
 
-        if ($body['private'] === 'false') {
+        if ($body['private'] === 'false' && empty($body['entities'])) {
             $body['entities'] = ['ALL_ENTITIES'];
         }
 
