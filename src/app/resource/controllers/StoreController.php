@@ -52,6 +52,7 @@ class StoreController
                 $data = StoreController::prepareUpdateResourceStorage($args);
             }
 
+            $fileContent = '';
             if (!empty($args['encodedFile'])) {
                 $fileContent = base64_decode(str_replace(['-', '_'], ['+', '/'], $args['encodedFile']));
 
@@ -107,7 +108,7 @@ class StoreController
 
     /**
      * @param array $args
-     * @return int|mixed|string[]
+     * @return int|array
      */
     public static function storeAttachment(array $args)
     {
