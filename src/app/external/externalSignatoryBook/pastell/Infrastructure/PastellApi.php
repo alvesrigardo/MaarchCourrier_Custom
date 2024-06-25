@@ -13,6 +13,7 @@
 
 namespace ExternalSignatoryBook\pastell\Infrastructure;
 
+use Exception;
 use ExternalSignatoryBook\pastell\Domain\PastellApiInterface;
 use ExternalSignatoryBook\pastell\Domain\PastellConfig;
 use SrcCore\models\CurlModel;
@@ -23,6 +24,7 @@ class PastellApi implements PastellApiInterface
      * Getting Pastell version (Checking if URL, login and password are correct)
      * @param PastellConfig $config
      * @return array
+     * @throws Exception
      */
     public function getVersion(PastellConfig $config): array
     {
@@ -48,6 +50,7 @@ class PastellApi implements PastellApiInterface
      * Getting the connected entity
      * @param PastellConfig $config
      * @return array|string[]
+     * @throws Exception
      */
     public function getEntity(PastellConfig $config): array
     {
@@ -76,6 +79,7 @@ class PastellApi implements PastellApiInterface
      * Getting the plugged connector
      * @param PastellConfig $config
      * @return array|string[]
+     * @throws Exception
      */
     public function getConnector(PastellConfig $config): array
     {
@@ -104,6 +108,7 @@ class PastellApi implements PastellApiInterface
      * Getting the type of folder(document) that can be created
      * @param PastellConfig $config
      * @return array
+     * @throws Exception
      */
     public function getFolderType(PastellConfig $config): array
     {
@@ -132,11 +137,13 @@ class PastellApi implements PastellApiInterface
      * Getting the type of the plugged connector
      * @param PastellConfig $config
      * @return array
+     * @throws Exception
      */
     public function getIparapheurType(PastellConfig $config): array
     {
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/connecteur/' . $config->getConnector() . '/externalData/iparapheur_type',
+            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/connecteur/' .
+                $config->getConnector() . '/externalData/iparapheur_type',
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'method'    => 'GET'
         ]);
@@ -160,6 +167,7 @@ class PastellApi implements PastellApiInterface
      * Creating a folder
      * @param PastellConfig $config
      * @return array|string[]
+     * @throws Exception
      */
     public function createFolder(PastellConfig $config): array
     {
@@ -189,11 +197,13 @@ class PastellApi implements PastellApiInterface
      * @param PastellConfig $config
      * @param string $idFolder
      * @return array
+     * @throws Exception
      */
     public function getIparapheurSousType(PastellConfig $config, string $idFolder): array
     {
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/externalData/iparapheur_sous_type',
+            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder .
+                '/externalData/iparapheur_sous_type',
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'method'    => 'GET'
         ]);
@@ -217,6 +227,7 @@ class PastellApi implements PastellApiInterface
      * @param string $title
      * @param string $sousType
      * @return array|string[]
+     * @throws Exception
      */
     public function editFolder(PastellConfig $config, string $idFolder, string $title, string $sousType): array
     {
@@ -254,6 +265,7 @@ class PastellApi implements PastellApiInterface
      * @param string $idFolder
      * @param string $filePath
      * @return array|string[]
+     * @throws Exception
      */
     public function uploadMainFile(PastellConfig $config, string $idFolder, string $filePath): array
     {
@@ -263,7 +275,8 @@ class PastellApi implements PastellApiInterface
         ];
 
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/file/document',
+            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder .
+                '/file/document',
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'headers'   => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'method'    => 'POST',
@@ -287,16 +300,22 @@ class PastellApi implements PastellApiInterface
      * @param string $filePath
      * @param int $nbAttachments
      * @return array|string[]
+     * @throws Exception
      */
-    public function uploadAttachmentFile(PastellConfig $config, string $idFolder, string $filePath, int $nbAttachments): array
-    {
+    public function uploadAttachmentFile(
+        PastellConfig $config,
+        string $idFolder,
+        string $filePath,
+        int $nbAttachments
+    ): array {
         $bodyData = [
             'file_name'    => 'PJ' . ($nbAttachments + 1) . '.' . pathinfo($filePath)['extension'],
             'file_content' => file_get_contents($filePath)
         ];
 
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/file/annexe/' . $nbAttachments,
+            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder .
+                '/file/annexe/' . $nbAttachments,
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'headers'   => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'method'    => 'POST',
@@ -319,11 +338,13 @@ class PastellApi implements PastellApiInterface
      * @param PastellConfig $config
      * @param string $idFolder
      * @return array
+     * @throws Exception
      */
     public function orientation(PastellConfig $config, string $idFolder): array
     {
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/action/orientation',
+            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder .
+                '/action/orientation',
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'method'    => 'POST'
         ]);
@@ -345,6 +366,7 @@ class PastellApi implements PastellApiInterface
      * @param PastellConfig $config
      * @param string $idFolder
      * @return array|string[]
+     * @throws Exception
      */
     public function getFolderDetail(PastellConfig $config, string $idFolder): array
     {
@@ -377,11 +399,13 @@ class PastellApi implements PastellApiInterface
      * @param PastellConfig $config
      * @param string $idFolder
      * @return object|array
+     * @throws Exception
      */
     public function getXmlDetail(PastellConfig $config, string $idFolder): object
     {
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/file/iparapheur_historique',
+            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder .
+                '/file/iparapheur_historique',
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'method'    => 'GET',
             'isXml'     => true
@@ -404,11 +428,13 @@ class PastellApi implements PastellApiInterface
      * @param PastellConfig $config
      * @param string $idFolder
      * @return array
+     * @throws Exception
      */
     public function downloadFile(PastellConfig $config, string $idFolder): array
     {
         $response = CurlModel::exec([
-            'url'          => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/file/document',
+            'url'          => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder .
+                '/file/document',
             'basicAuth'    => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'method'       => 'GET',
             'fileResponse' => true
@@ -430,11 +456,13 @@ class PastellApi implements PastellApiInterface
      * @param PastellConfig $config
      * @param string $idFolder
      * @return bool
+     * @throws Exception
      */
     public function verificationIParapheur(PastellConfig $config, string $idFolder): bool
     {
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/action/verif-iparapheur',
+            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder .
+                '/action/verif-iparapheur',
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'headers'   => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'method'    => 'POST',
@@ -448,11 +476,13 @@ class PastellApi implements PastellApiInterface
      * @param PastellConfig $config
      * @param string $idFolder
      * @return bool
+     * @throws Exception
      */
     public function sendIparapheur(PastellConfig $config, string $idFolder): bool
     {
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/api/v2' . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/action/send-iparapheur',
+            'url'       => $config->getUrl() . '/api/v2' . '/entite/' . $config->getEntity() . '/document/' .
+                $idFolder . '/action/send-iparapheur',
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'headers'   => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'method'    => 'POST',
@@ -465,11 +495,13 @@ class PastellApi implements PastellApiInterface
      * @param PastellConfig $config
      * @param string $idFolder
      * @return array|string[]
+     * @throws Exception
      */
     public function deleteFolder(PastellConfig $config, string $idFolder): array
     {
         $response = CurlModel::exec([
-            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder . '/action/supression',
+            'url'       => $config->getUrl() . '/entite/' . $config->getEntity() . '/document/' . $idFolder .
+                '/action/supression',
             'basicAuth' => ['user' => $config->getLogin(), 'password' => $config->getPassword()],
             'headers'   => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'method'    => 'POST',
