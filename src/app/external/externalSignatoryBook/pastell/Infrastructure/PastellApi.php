@@ -69,7 +69,7 @@ class PastellApi implements PastellApiInterface
         } else {
             $return = [];
             foreach ($response['response'] as $entite) {
-                $return = ['entityId' => $entite['id_e']];
+                $return[] = $entite['id_e'];
             }
         }
         return $return;
