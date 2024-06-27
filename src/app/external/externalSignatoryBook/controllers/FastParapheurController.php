@@ -1938,6 +1938,7 @@ class FastParapheurController
     public static function prepareStampsSteps(array $steps): array
     {
         $stampsPositions = [];
+        $stampIndex = 0;
 
         foreach ($steps as $step) {
             if (
@@ -1962,7 +1963,7 @@ class FastParapheurController
                 }
 
                 $stampsPositions[$step['resId']][$type][$step['sequence']] = [
-                    'index'     => ($step['sequence'] + 1), // the step to which the pictogram will be associated
+                    'index'     => ($stampIndex + 1), // the step to which the pictogram will be associated
                     'border'    => 'true',
                     'opacite'   => 'true',
                     'font-size' => '6',
@@ -1987,6 +1988,7 @@ class FastParapheurController
                         ['name' => $roleDate]
                     ]
                 ];
+                $stampIndex++;
             }
         }
 
