@@ -1938,28 +1938,43 @@ class FastParapheurController
     public static function prepareStampsSteps(array $steps): array
     {
         $stampsPositions = [];
-        $stampIndex = 0;
+        $visaStampIndex = 0;
+        $signStampIndex = 0;
+        $previousResId = -1;
 
         foreach ($steps as $step) {
+            // Reset visa and sign stamp indexes foreach document
+            if ($previousResId !== $step['resId']) {
+                $visaStampIndex = 0;
+                $signStampIndex = 0;
+                $previousResId = $step['resId'];
+            }
+
+            // Check if signature positions are set
             if (
                 isset($step['signaturePositions'][0]['page']) &&
                 isset($step['signaturePositions'][0]['positionX']) &&
                 isset($step['signaturePositions'][0]['positionY'])
             ) {
-                $type = 'pictogramme-visa';
-                $role = 'VALIDEUR';
-                $validActionByRole = "Validé par: \${{$role}}";
-                $roleDate = 'DATE_VISA';
-
+                // Determine type and role based on action
                 if ($step['action'] === 'sign') {
                     $type = 'pictogramme-signature';
                     $role = 'SIGNATAIRE';
                     $validActionByRole = "Signé par: \${{$role}}";
                     $roleDate = 'DATE_SIGNATURE';
+                    $stampIndex = $signStampIndex;
+                    ++$signStampIndex;
 
                     if (!empty($step['externalInformations'])) {
                         $validActionByRole = "Signé par: \${OTP_INFOS[firstname,lastname]}";
                     }
+                } else {
+                    $type = 'pictogramme-visa';
+                    $role = 'VALIDEUR';
+                    $validActionByRole = "Validé par: \${{$role}}";
+                    $roleDate = 'DATE_VISA';
+                    $stampIndex = $visaStampIndex;
+                    ++$visaStampIndex;
                 }
 
                 $stampsPositions[$step['resId']][$type][$step['sequence']] = [
@@ -1988,7 +2003,6 @@ class FastParapheurController
                         ['name' => $roleDate]
                     ]
                 ];
-                $stampIndex++;
             }
         }
 
