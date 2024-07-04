@@ -1968,7 +1968,7 @@ class FastParapheurController
                     if (!empty($step['externalInformations'])) {
                         $validActionByRole = "Signé par: \${OTP_INFOS[firstname,lastname]}";
                     }
-                } else {
+                } elseif ($step['action'] === 'visa')  {
                     $type = 'pictogramme-visa';
                     $role = 'VALIDEUR';
                     $validActionByRole = "Validé par: \${{$role}}";
