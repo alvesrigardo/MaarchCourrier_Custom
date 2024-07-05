@@ -1950,33 +1950,33 @@ class FastParapheurController
                 $previousResId = $step['resId'];
             }
 
+            // Determine type and role based on action
+            if ($step['action'] === 'sign') {
+                $type = 'pictogramme-signature';
+                $role = 'SIGNATAIRE';
+                $validActionByRole = "Signé par: \${{$role}}";
+                $roleDate = 'DATE_SIGNATURE';
+                $stampIndex = $signStampIndex;
+                ++$signStampIndex;
+
+                if (!empty($step['externalInformations'])) {
+                    $validActionByRole = "Signé par: \${OTP_INFOS[firstname,lastname]}";
+                }
+            } elseif ($step['action'] === 'visa')  {
+                $type = 'pictogramme-visa';
+                $role = 'VALIDEUR';
+                $validActionByRole = "Validé par: \${{$role}}";
+                $roleDate = 'DATE_VISA';
+                $stampIndex = $visaStampIndex;
+                ++$visaStampIndex;
+            }
+
             // Check if signature positions are set
             if (
                 isset($step['signaturePositions'][0]['page']) &&
                 isset($step['signaturePositions'][0]['positionX']) &&
                 isset($step['signaturePositions'][0]['positionY'])
             ) {
-                // Determine type and role based on action
-                if ($step['action'] === 'sign') {
-                    $type = 'pictogramme-signature';
-                    $role = 'SIGNATAIRE';
-                    $validActionByRole = "Signé par: \${{$role}}";
-                    $roleDate = 'DATE_SIGNATURE';
-                    $stampIndex = $signStampIndex;
-                    ++$signStampIndex;
-
-                    if (!empty($step['externalInformations'])) {
-                        $validActionByRole = "Signé par: \${OTP_INFOS[firstname,lastname]}";
-                    }
-                } elseif ($step['action'] === 'visa')  {
-                    $type = 'pictogramme-visa';
-                    $role = 'VALIDEUR';
-                    $validActionByRole = "Validé par: \${{$role}}";
-                    $roleDate = 'DATE_VISA';
-                    $stampIndex = $visaStampIndex;
-                    ++$visaStampIndex;
-                }
-
                 $stampsPositions[$step['resId']][$type][$step['sequence']] = [
                     'index'     => ($stampIndex + 1), // the step to which the pictogram will be associated
                     'border'    => 'true',
