@@ -1756,17 +1756,6 @@ class FastParapheurController
         ]);
 
         if ($curlReturn['code'] != 200) {
-            LogsController::add([
-                'isTech'    => true,
-                'level'     => 'ERROR',
-                'recordId'  => 'FastParapheurController',
-                'eventType' => 'documents ondemand',
-                'eventId'   => 'response',
-                'moduleId'  => json_encode([
-                    'response' => $curlReturn['response'],
-                    'errors' => $curlReturn['errors']
-                ], true),
-            ]);
             return ['code' => $curlReturn['code'], 'error' => $curlReturn['errors']];
         }
         if (!empty($curlReturn['response']['developerMessage'])) {
