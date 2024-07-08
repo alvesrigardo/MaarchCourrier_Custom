@@ -1592,7 +1592,6 @@ class FastParapheurController
         bool $isOtpActive = false,
         string $comment = ""
     ): array {
-        ValidatorModel::notEmpty($mainResource, ['resId', 'subject', 'filePath', 'integrations']);
         ValidatorModel::intType($mainResource, ['resId']);
         ValidatorModel::stringType($mainResource, ['subject', 'filePath', 'integrations']);
         ValidatorModel::boolType($mainResource, ['signable']);
@@ -1671,7 +1670,7 @@ class FastParapheurController
         $mainResource['integrations'] = json_decode($mainResource['integrations'] ?? '', true);
 
         if (
-            !empty($mainResource['integrations']['inSignatureBook']) &&
+            !empty($mainResource['integrations']['inSignatureBook'] ?? null) &&
             !empty($mainResource['filePath']) &&
             !empty($mainResource['signable'])
         ) {
