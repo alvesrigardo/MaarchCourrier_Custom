@@ -40,15 +40,14 @@ class SendToPastell
      * @param VisaCircuitDataInterface $visaCircuitData
      */
     public function __construct(
-        PastellConfigurationCheck    $checkConfigPastell,
-        PastellApiInterface          $pastellApi,
-        PastellConfigInterface       $pastellConfig,
-        ResourceDataInterface        $resourceData,
-        ResourceFileInterface        $resourceFile,
+        PastellConfigurationCheck $checkConfigPastell,
+        PastellApiInterface $pastellApi,
+        PastellConfigInterface $pastellConfig,
+        ResourceDataInterface $resourceData,
+        ResourceFileInterface $resourceFile,
         ProcessVisaWorkflowInterface $processVisaWorkflow,
-        VisaCircuitDataInterface     $visaCircuitData
-    )
-    {
+        VisaCircuitDataInterface $visaCircuitData
+    ) {
         $this->checkConfigPastell = $checkConfigPastell;
         $this->pastellConfig = $pastellConfig;
         $this->pastellApi = $pastellApi;
@@ -85,7 +84,7 @@ class SendToPastell
 
         return [
             'sended' => [
-                'letterbox_coll'   => [
+                'letterbox_coll' => [
                     $resId => $sentResource['resource'] ?? null
                 ],
                 'attachments_coll' => $sentResource['attachments']
@@ -183,8 +182,13 @@ class SendToPastell
      * @param array $annexes
      * @return array|string[]
      */
-    public function sendFolderToPastell(int $resId, string $title, string $sousType, string $filePath, array $annexes = []): array
-    {
+    public function sendFolderToPastell(
+        int $resId,
+        string $title,
+        string $sousType,
+        string $filePath,
+        array $annexes = []
+    ): array {
         $config = $this->pastellConfig->getPastellConfig();
 
         // Checking folder creation

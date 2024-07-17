@@ -603,8 +603,8 @@ class IxbusController
                     $args['idsToRetrieve'][$version][$resId]['signatory_user_serial_id'] = null;
 
                     $lastStep = count($folderData['data']['etapes']) - 1;
-                    $prenom = $folderData['data']['etapes'][$lastStep]['utilisateurRealisation']['prenom'];
-                    $nom = $folderData['data']['etapes'][$lastStep]['utilisateurRealisation']['nom'];
+                    $prenom = $folderData['data']['etapes'][$lastStep]['utilisateurRealisation']['prenom'] ?? 'inconnu';
+                    $nom = $folderData['data']['etapes'][$lastStep]['utilisateurRealisation']['nom'] ?? 'inconnu';
                     $signatoryUser = "$prenom $nom";
 
                     IxbusController::updateDocumentExternalStateSignatoryUser([

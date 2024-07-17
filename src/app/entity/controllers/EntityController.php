@@ -20,6 +20,7 @@ use Entity\models\EntityModel;
 use Entity\models\ListInstanceModel;
 use Entity\models\ListTemplateItemModel;
 use Entity\models\ListTemplateModel;
+use Folder\models\EntityFolderModel;
 use Group\controllers\PrivilegeController;
 use Group\models\GroupModel;
 use History\controllers\HistoryController;
@@ -461,6 +462,8 @@ class EntityController
         EntityModel::delete(['where' => ['entity_id = ?'], 'data' => [$aArgs['id']]]);
 
         IndexingModelsEntitiesModel::delete(['where' => ['entity_id = ?'], 'data' => [$aArgs['id']]]);
+
+        EntityFolderModel::delete(['where' => ['entity_id = ?'], 'data' => [$entity['id']]]);
 
         HistoryController::add([
             'tableName' => 'entities',

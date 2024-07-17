@@ -14,39 +14,50 @@
 
 namespace IndexingModel\models;
 
+use Exception;
 use SrcCore\models\ValidatorModel;
 use SrcCore\models\DatabaseModel;
 
 class IndexingModelModel
 {
-    public static function get(array $args = [])
+    /**
+     * @param array $args
+     * @return array
+     * @throws Exception
+     */
+    public static function get(array $args = []): array
     {
         ValidatorModel::arrayType($args, ['select', 'where', 'data', 'orderBy']);
         ValidatorModel::intType($args, ['limit']);
 
         $models = DatabaseModel::select([
-            'select'    => empty($args['select']) ? ['*'] : $args['select'],
-            'table'     => ['indexing_models'],
-            'where'     => empty($args['where']) ? [] : $args['where'],
-            'data'      => empty($args['data']) ? [] : $args['data'],
-            'order_by'  => empty($args['orderBy']) ? [] : $args['orderBy'],
-            'limit'     => empty($args['limit']) ? 0 : $args['limit']
+            'select'   => empty($args['select']) ? ['*'] : $args['select'],
+            'table'    => ['indexing_models'],
+            'where'    => empty($args['where']) ? [] : $args['where'],
+            'data'     => empty($args['data']) ? [] : $args['data'],
+            'order_by' => empty($args['orderBy']) ? [] : $args['orderBy'],
+            'limit'    => empty($args['limit']) ? 0 : $args['limit']
         ]);
 
         return $models;
     }
 
-    public static function getById(array $args)
+    /**
+     * @param array $args
+     * @return array
+     * @throws Exception
+     */
+    public static function getById(array $args): array
     {
         ValidatorModel::notEmpty($args, ['id']);
         ValidatorModel::intVal($args, ['id']);
         ValidatorModel::arrayType($args, ['select']);
 
         $model = DatabaseModel::select([
-            'select'    => empty($args['select']) ? ['*'] : $args['select'],
-            'table'     => ['indexing_models'],
-            'where'     => ['id = ?'],
-            'data'      => [$args['id']],
+            'select' => empty($args['select']) ? ['*'] : $args['select'],
+            'table'  => ['indexing_models'],
+            'where'  => ['id = ?'],
+            'data'   => [$args['id']],
         ]);
 
         if (empty($model[0])) {
@@ -56,9 +67,17 @@ class IndexingModelModel
         return $model[0];
     }
 
-    public static function create(array $args)
+    /**
+     * @param array $args
+     * @return int
+     * @throws Exception
+     */
+    public static function create(array $args): int
     {
-        ValidatorModel::notEmpty($args, ['label', 'category', 'default', 'owner', 'private', 'mandatoryFile', 'ladProcessing']);
+        ValidatorModel::notEmpty(
+            $args,
+            ['label', 'category', 'default', 'owner', 'private', 'mandatoryFile', 'ladProcessing']
+        );
         ValidatorModel::stringType($args, ['label', 'category', 'default', 'private']);
         ValidatorModel::intVal($args, ['owner', 'master']);
 
@@ -67,22 +86,27 @@ class IndexingModelModel
         DatabaseModel::insert([
             'table'         => 'indexing_models',
             'columnsValues' => [
-                'id'                => $nextSequenceId,
-                'label'             => $args['label'],
-                'category'          => $args['category'],
-                '"default"'         => $args['default'],
-                'owner'             => $args['owner'],
-                'private'           => $args['private'],
-                'mandatory_file'    => $args['mandatoryFile'],
+                'id'             => $nextSequenceId,
+                'label'          => $args['label'],
+                'category'       => $args['category'],
+                '"default"'      => $args['default'],
+                'owner'          => $args['owner'],
+                'private'        => $args['private'],
+                'mandatory_file' => $args['mandatoryFile'],
                 'lad_processing' => $args['ladProcessing'],
-                'master'            => $args['master']
+                'master'         => $args['master']
             ]
         ]);
 
         return $nextSequenceId;
     }
 
-    public static function update(array $args)
+    /**
+     * @param array $args
+     * @return true
+     * @throws Exception
+     */
+    public static function update(array $args): bool
     {
         ValidatorModel::notEmpty($args, ['set', 'where', 'data']);
         ValidatorModel::arrayType($args, ['set', 'where', 'data']);
@@ -97,7 +121,12 @@ class IndexingModelModel
         return true;
     }
 
-    public static function delete(array $args)
+    /**
+     * @param array $args
+     * @return true
+     * @throws Exception
+     */
+    public static function delete(array $args): bool
     {
         ValidatorModel::notEmpty($args, ['where', 'data']);
         ValidatorModel::arrayType($args, ['where', 'data']);
