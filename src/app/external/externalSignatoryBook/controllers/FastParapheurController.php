@@ -1592,7 +1592,6 @@ class FastParapheurController
         bool $isOtpActive = false,
         string $comment = ""
     ): array {
-        ValidatorModel::notEmpty($mainResource, ['resId', 'subject', 'filePath', 'integrations']);
         ValidatorModel::intType($mainResource, ['resId']);
         ValidatorModel::stringType($mainResource, ['subject', 'filePath', 'integrations']);
         ValidatorModel::boolType($mainResource, ['signable']);
@@ -1671,7 +1670,7 @@ class FastParapheurController
         $mainResource['integrations'] = json_decode($mainResource['integrations'] ?? '', true);
 
         if (
-            !empty($mainResource['integrations']['inSignatureBook']) &&
+            !empty($mainResource['integrations']['inSignatureBook'] ?? null) &&
             !empty($mainResource['filePath']) &&
             !empty($mainResource['signable'])
         ) {
@@ -1760,6 +1759,17 @@ class FastParapheurController
             return ['code' => $curlReturn['code'], 'error' => $curlReturn['errors']];
         }
         if (!empty($curlReturn['response']['developerMessage'])) {
+            LogsController::add([
+                'isTech'    => true,
+                'level'     => 'ERROR',
+                'recordId'  => 'FastParapheurController',
+                'eventType' => 'documents ondemand',
+                'eventId'   => 'response',
+                'moduleId'  => json_encode([
+                    'response' => $curlReturn['response'],
+                    'errors' => $curlReturn['errors']
+                ], true),
+            ]);
             return ['code' => $curlReturn['code'], 'error' => $curlReturn['response']['userFriendlyMessage']];
         }
 
@@ -1938,31 +1948,47 @@ class FastParapheurController
     public static function prepareStampsSteps(array $steps): array
     {
         $stampsPositions = [];
+        $visaStampIndex = 0;
+        $signStampIndex = 0;
+        $previousResId = -1;
 
         foreach ($steps as $step) {
+            // Reset visa and sign stamp indexes foreach document
+            if ($previousResId !== $step['resId']) {
+                $visaStampIndex = 0;
+                $signStampIndex = 0;
+                $previousResId = $step['resId'];
+            }
+
+            // Determine type and role based on action
+            if ($step['action'] === 'sign') {
+                $type = 'pictogramme-signature';
+                $role = 'SIGNATAIRE';
+                $validActionByRole = "Signé par: \${{$role}}";
+                $roleDate = 'DATE_SIGNATURE';
+                $stampIndex = $signStampIndex;
+                ++$signStampIndex;
+
+                if (!empty($step['externalInformations'])) {
+                    $validActionByRole = "Signé par: \${OTP_INFOS[firstname,lastname]}";
+                }
+            } elseif ($step['action'] === 'visa')  {
+                $type = 'pictogramme-visa';
+                $role = 'VALIDEUR';
+                $validActionByRole = "Validé par: \${{$role}}";
+                $roleDate = 'DATE_VISA';
+                $stampIndex = $visaStampIndex;
+                ++$visaStampIndex;
+            }
+
+            // Check if signature positions are set
             if (
                 isset($step['signaturePositions'][0]['page']) &&
                 isset($step['signaturePositions'][0]['positionX']) &&
                 isset($step['signaturePositions'][0]['positionY'])
             ) {
-                $type = 'pictogramme-visa';
-                $role = 'VALIDEUR';
-                $validActionByRole = "Validé par: \${{$role}}";
-                $roleDate = 'DATE_VISA';
-
-                if ($step['action'] === 'sign') {
-                    $type = 'pictogramme-signature';
-                    $role = 'SIGNATAIRE';
-                    $validActionByRole = "Signé par: \${{$role}}";
-                    $roleDate = 'DATE_SIGNATURE';
-
-                    if (!empty($step['externalInformations'])) {
-                        $validActionByRole = "Signé par: \${OTP_INFOS[firstname,lastname]}";
-                    }
-                }
-
                 $stampsPositions[$step['resId']][$type][$step['sequence']] = [
-                    'index'     => ($step['sequence'] + 1), // the step to which the pictogram will be associated
+                    'index'     => ($stampIndex + 1), // the step to which the pictogram will be associated
                     'border'    => 'true',
                     'opacite'   => 'true',
                     'font-size' => '6',

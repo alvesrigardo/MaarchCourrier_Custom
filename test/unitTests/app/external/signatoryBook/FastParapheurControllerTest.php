@@ -664,6 +664,70 @@ class FastParapheurControllerTest extends CourrierTestCase
     /**
      * @return void
      */
+    public function testCanGetMultipleVisaAndSignStampsStepsForTheSameDocument(): void
+    {
+        self::$signStep[0]['signaturePositions'][0]['sequence'] = 0;
+        $signaturePositions1 = self::$signStep[0]['signaturePositions'];
+
+        self::$signStep[0]['signaturePositions'][0]['sequence'] = 1;
+        $signaturePositions2 = self::$signStep[0]['signaturePositions'];
+
+        self::$signStep[0]['signaturePositions'][0]['sequence'] = 2;
+        $signaturePositions3 = self::$signStep[0]['signaturePositions'];
+        $steps = [
+            [
+                "resId"                => 100,
+                "mainDocument"         => true,
+                "externalId"           => "signataire@maarch.test",
+                "sequence"             => 0,
+                "action"               => "sign",
+                "signatureMode"        => "sign",
+                "signaturePositions"   => $signaturePositions1,
+                "datePositions"        => [],
+                "externalInformations" => null
+            ],
+            [
+                "resId"                => 100,
+                "mainDocument"         => true,
+                "externalId"           => "bbain@maarch.test",
+                "sequence"             => 1,
+                "action"               => "visa",
+                "signatureMode"        => "visa",
+                "signaturePositions"   => $signaturePositions2,
+                "datePositions"        => [],
+                "externalInformations" => null
+            ],
+            [
+                "resId"                => 100,
+                "mainDocument"         => true,
+                "externalId"           => "example@maarch.test",
+                "sequence"             => 2,
+                "action"               => "sign",
+                "signatureMode"        => "sign",
+                "signaturePositions"   => $signaturePositions3,
+                "datePositions"        => [],
+                "externalInformations" => null
+            ]
+        ];
+
+        $preparedSteps = FastParapheurController::prepareStampsSteps($steps);
+
+        $this->assertIsArray($preparedSteps);
+        $this->assertNotEmpty($preparedSteps);
+        $this->assertArrayHasKey(100, $preparedSteps);
+        $this->assertSame(2, count($preparedSteps[100]));
+        $this->assertArrayHasKey('pictogramme-visa', $preparedSteps[100]);
+        $this->assertSame(1, count($preparedSteps[100]['pictogramme-visa']));
+        $this->assertSame(1, $preparedSteps[100]['pictogramme-visa'][1]['index']);
+        $this->assertArrayHasKey('pictogramme-signature', $preparedSteps[100]);
+        $this->assertSame(2, count($preparedSteps[100]['pictogramme-signature']));
+        $this->assertSame(1, $preparedSteps[100]['pictogramme-signature'][0]['index']);
+        $this->assertSame(2, $preparedSteps[100]['pictogramme-signature'][2]['index']);
+    }
+
+    /**
+     * @return void
+     */
     public function testCannotGenerateXmlPictogrammeWithEmptyPictogrammeArrayInput(): void
     {
         $pictogrammes = [];

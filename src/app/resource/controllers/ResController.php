@@ -1166,7 +1166,7 @@ class ResController extends ResourceControlController
                     if (!empty($listTemplateItems)) {
                         foreach ($listTemplateItems as $diffusion) {
                             if ($diffusion['item_mode'] == 'dest') {
-                                ResModel::update(['set' => ['dest_user' => $diffusion['id']], 'where' => ['res_id = ?'], 'data' => [$args['resId']]]);
+                                ResModel::update(['set' => ['dest_user' => $diffusion['item_id']], 'where' => ['res_id = ?'], 'data' => [$args['resId']]]);
                             }
                             ListInstanceModel::create([
                                 'res_id'            => $args['resId'],
