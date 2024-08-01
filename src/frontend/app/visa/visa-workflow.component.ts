@@ -128,6 +128,7 @@ export class VisaWorkflowComponent implements OnInit {
         return new Promise((resolve) => {
             this.http.get(route)
                 .subscribe((data: any) => {
+                    this.visaWorkflow.items = [];
                     if (data.listTemplates[0]) {
                         this.visaWorkflow.items = data.listTemplates[0].items.map((item: any) => ({
                             ...item,
