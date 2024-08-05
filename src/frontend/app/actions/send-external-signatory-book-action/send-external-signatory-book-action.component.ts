@@ -268,14 +268,18 @@ export class SendExternalSignatoryBookActionComponent implements OnInit {
         return this.translate.instant('lang.sendToExternalSignatoryBook');
     }
 
-    async afterAttachmentToggle(data: {id: string, attachment: any}) {
+    async afterAttachmentToggle(data: {id: string, attachments: any[]}) {
         await this.checkExternalSignatureBook();
         this.attachmentsList.setTaget(this.attachmentsList.currentIntegrationTarget);
-        if (!data.attachment.inSignatureBook) {
-            const resource: any = this.resourcesToSign.find((resource: any) => resource.resId === data.attachment.resId);
-            if (resource !== undefined) {
-                this.toggleDocToSign(false, resource, false);
-            }
+        if (data.id === 'setInSignatureBook') {
+            data.attachments.forEach((attachment: any) => {
+                if (!attachment.signable || !attachment.inSignatureBook) {
+                    const resource: any = this.resourcesToSign.find((resource: any) => resource.resId === attachment.resId);
+                    if (resource !== undefined) {
+                        this.toggleDocToSign(false, resource, false);
+                    }
+                }
+            });
         }
     }
 
