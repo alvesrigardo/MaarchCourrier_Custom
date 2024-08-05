@@ -317,7 +317,9 @@ class TileController
             }
         } elseif ($tile['type'] == 'folder') {
             $folder = FolderModel::getById(['select' => ['label'], 'id' => $tile['parameters']['folderId']]);
-            $tile['label'] = "{$folder['label']}";
+            if (isset($folder['label'])) {
+                $tile['label'] = "{$folder['label']}";
+            }
         } elseif ($tile['type'] == 'externalSignatoryBook') {
             $loadedXml = CoreConfigModel::getXmlLoaded(['path' => 'modules/visa/xml/remoteSignatoryBooks.xml']);
             if (empty($loadedXml)) {
@@ -331,8 +333,14 @@ class TileController
                 $tile['externalSignatoryBookUrl'] = rtrim($fastParapheurUrl, "/");
             }
         } elseif ($tile['type'] == 'searchTemplate') {
-            $searchTemplate = SearchTemplateModel::get(['select' => ['label'], 'where' => ['id = ?', 'user_id = ?'], 'data' => [$tile['parameters']['searchTemplateId'], $GLOBALS['id']]]);
-            $tile['label']  = "{$searchTemplate[0]['label']}";
+            $searchTemplate = SearchTemplateModel::get([
+                'select' => ['label'],
+                'where'  => ['id = ?', 'user_id = ?'],
+                'data'   => [$tile['parameters']['searchTemplateId'], $GLOBALS['id']]
+            ]);
+            if (isset($searchTemplate[0]['label'])) {
+                $tile['label'] = "{$searchTemplate[0]['label']}";
+            }
         }
 
         return true;
