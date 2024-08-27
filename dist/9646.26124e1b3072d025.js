@@ -1,0 +1,1 @@
+(self.webpackChunkmaarchCourrier=self.webpackChunkmaarchCourrier||[]).push([[9646],{9646:(e,u,_)=>{_.d(u,{of:()=>n});var o=_(3269),a=_(2076);function n(...r){const c=(0,o.yG)(r);return(0,a.D)(r,c)}}}]);
