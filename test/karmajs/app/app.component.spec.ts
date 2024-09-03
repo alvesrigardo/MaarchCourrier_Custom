@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, flush } from '@angular/core/testing';
+import { TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from '../../../src/frontend/app/app.component';
 import { MissingTranslationHandler, TranslateCompiler, TranslateLoader, TranslateModule, TranslateParser, TranslateService, TranslateStore } from "@ngx-translate/core";
@@ -66,11 +66,14 @@ describe('AppComponent', () => {
         expect(app).toBeTruthy();
     }));
 
-    it('should render title', () => {
-        TestBed.inject(AppService).coreLoaded = true;
+    it('should render title', fakeAsync(() => {
         const fixture = TestBed.createComponent(AppComponent);
         const compiled = fixture.nativeElement;
         fixture.detectChanges();
+        tick();
+        fixture.componentInstance.appService.coreLoaded = true;
+        fixture.detectChanges();
+        tick();
         expect(compiled.querySelector('.maarch-container')).toBeTruthy();
-    });
+    }));
 });

@@ -53,7 +53,7 @@ export class AttachmentsListComponent implements OnInit {
     @Input() isModal: boolean = false;
 
     @Output() reloadBadgeAttachments = new EventEmitter<string>();
-    @Output() afterActionAttachment = new EventEmitter<string | {id: string, attachment: object}>();
+    @Output() afterActionAttachment = new EventEmitter<string | {id: string, attachments: any[]}>();
 
     integrationTargets: any[] = [
         {
@@ -165,7 +165,7 @@ export class AttachmentsListComponent implements OnInit {
                         ... attachment,
                         signable: this.attachmentTypes.find((type: any) => type.typeId === attachment.type).signable
                     }));
-                    this.attachments.forEach((element: any) => {                        
+                    this.attachments.forEach((element: any) => {
                         if (this.filterAttachTypes.filter(attachType => attachType.id === element.type).length === 0) {
                             this.filterAttachTypes.push({
                                 id: element.type,
@@ -180,7 +180,7 @@ export class AttachmentsListComponent implements OnInit {
                         this.currentFilter = '';
                     }
                     this.reloadBadgeAttachments.emit(`${this.attachments.length}`);
-                    this.afterActionAttachment.emit('setInSignatureBook');
+                    this.afterActionAttachment.emit({ id: 'setInSignatureBook', attachments: this.attachments });
                     this.loading = false;
                 }),
                 catchError((err: any) => {
@@ -195,7 +195,7 @@ export class AttachmentsListComponent implements OnInit {
         this.http.put('../rest/attachments/' + attachment.resId + '/inSignatureBook', {}).pipe(
             tap(() => {
                 attachment.inSignatureBook = !attachment.inSignatureBook;
-                this.afterActionAttachment.emit({ id: 'setInSignatureBook', attachment: attachment });
+                this.afterActionAttachment.emit({ id: 'setInSignatureBook', attachments: this.attachments });
                 this.notify.success(this.translate.instant('lang.actionDone'));
             }),
             catchError((err: any) => {
@@ -209,7 +209,7 @@ export class AttachmentsListComponent implements OnInit {
         this.http.put('../rest/attachments/' + attachment.resId + '/inSendAttachment', {}).pipe(
             tap(() => {
                 attachment.inSendAttach = !attachment.inSendAttach;
-                this.afterActionAttachment.emit('setInSendAttachment');
+                this.afterActionAttachment.emit({ id: 'setInSignatureBook', attachments: this.attachments });
                 this.notify.success(this.translate.instant('lang.actionDone'));
             }),
             catchError((err: any) => {
@@ -254,7 +254,7 @@ export class AttachmentsListComponent implements OnInit {
             filter((data: string) => data === 'success'),
             tap(() => {
                 this.loadAttachments(this.resId);
-                this.afterActionAttachment.emit('setInSendAttachment');
+                this.afterActionAttachment.emit({ id: 'setInSignatureBook', attachments: this.attachments });
             }),
             catchError((err: any) => {
                 this.notify.handleErrors(err);
@@ -270,7 +270,7 @@ export class AttachmentsListComponent implements OnInit {
             exhaustMap(() => this.http.delete(`../rest/attachments/${attachment.resId}`)),
             tap(() => {
                 this.loadAttachments(this.resId);
-                this.afterActionAttachment.emit('setInSendAttachment');
+                this.afterActionAttachment.emit({ id: 'setInSignatureBook', attachments: this.attachments });
                 this.notify.success(this.translate.instant('lang.attachmentDeleted'));
             }),
             catchError((err: any) => {
